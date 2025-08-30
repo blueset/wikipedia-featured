@@ -2,9 +2,17 @@
   "name": "wikipedia-featured",
   "version": "1.0.0",
   "private": true,
+  "description": "Generates and publishes compact JSON snapshots of Wikipedia’s Featured Article of the Day (TFA) for multiple languages, updated every 6 hours and served via GitHub Pages.",
+  "homepage": "https://github.com/blueset/wikipedia-featured#readme",
+  "bugs": {
+    "url": "https://github.com/blueset/wikipedia-featured/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blueset/wikipedia-featured.git"
+  },
   "type": "module",
   "scripts": {
     "build": "node scripts/fetch.js"
   }
 }
-
