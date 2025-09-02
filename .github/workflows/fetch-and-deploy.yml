@@ -30,6 +30,11 @@ jobs:
       - name: Build JSON
         run: npm run build
 
+      - name: Include fonts in site
+        run: |
+          mkdir -p ./dist/fonts
+          cp -r ./fonts/* ./dist/fonts/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
