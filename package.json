@@ -13,6 +13,9 @@
   },
   "type": "module",
   "scripts": {
-    "build": "node scripts/fetch.js"
+    "build": "node index.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2"
   }
 }
