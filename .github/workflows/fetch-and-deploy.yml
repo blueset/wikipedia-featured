@@ -31,7 +31,9 @@ jobs:
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
       - name: Build JSON
-        run: npm run build
+        run: |
+          npm run build
+          curl https://api.1point3acres.com/visa_tracker/greencard/visa_bulletin > ./dist/visa_bulletin.json
 
       - name: Include fonts in site
         run: |
