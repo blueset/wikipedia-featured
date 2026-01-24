@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { writeFile } from "fs/promises";
+import { smartquotesHtml, smartquotesText } from "../src/smartquotes-html.js";
 
 
 async function inTheNewsEn() {
@@ -25,8 +26,8 @@ async function inTheNewsEn() {
   const $img = $imgContainer.find("img");
   const image = {
     url: $img.attr("src") ? `https:${$img.attr("src")}` : "",
-    alt: $img.attr("alt") || "",
-    caption: $imgContainer.find(".thumbcaption").text().trim(),
+    alt: smartquotesText($img.attr("alt") || ""),
+    caption: smartquotesText($imgContainer.find(".thumbcaption").text().trim()),
   };
 
   // 2. Headlines
@@ -38,8 +39,8 @@ async function inTheNewsEn() {
     // We want the inner HTML, but usually cleaned up a bit (e.g. relative links)
     // For now, just raw HTML of the li content.
     headlines.push({
-      html: $(el).html()?.trim() || "",
-      text: $(el).text().trim(),
+      html: smartquotesHtml($(el).html()?.trim() || ""),
+      text: smartquotesText($(el).text().trim()),
     });
   });
 
@@ -61,8 +62,8 @@ async function inTheNewsEn() {
     const $mainLink = $(el).children("a").first();
     if ($mainLink.length > 0) {
       const item = {
-        text: $mainLink.text() || "",
-        title: $mainLink.attr("title") || "",
+        text: smartquotesText($mainLink.text() || ""),
+        title: smartquotesText($mainLink.attr("title") || ""),
         url: $mainLink.attr("href") ? `https://en.wikipedia.org${$mainLink.attr("href")}` : "",
         relevantLinks: [],
       };
@@ -72,8 +73,8 @@ async function inTheNewsEn() {
         .find("ul li a")
         .each((_, subEl) => {
           item.relevantLinks.push({
-            text: $(subEl).text() || "",
-            title: $(subEl).attr("title") || "",
+            text: smartquotesText($(subEl).text() || ""),
+            title: smartquotesText($(subEl).attr("title") || ""),
             url: $(subEl).attr("href") ? `https://en.wikipedia.org${$(subEl).attr("href")}` : "",
           });
         });
@@ -92,7 +93,7 @@ async function inTheNewsEn() {
     const $link = $(el).find("a").first();
     if ($link.length > 0) {
       recentDeaths.push({
-        name: $link.attr("title") || $link.text(),
+        name: smartquotesText($link.attr("title") || $link.text()),
         url: $link.attr("href") ? `https://en.wikipedia.org${$link.attr("href")}` : "",
       });
     }
@@ -129,16 +130,16 @@ async function didYouKnowEn() {
   const $img = $imgContainer.find("img");
   const image = {
     url: $img.attr("src") ? `https:${$img.attr("src")}` : "",
-    alt: $img.attr("alt") || "",
-    caption: $imgContainer.find(".thumbcaption").text().trim(),
+    alt: smartquotesText($img.attr("alt") || ""),
+    caption: smartquotesText($imgContainer.find(".thumbcaption").text().trim()),
   };
 
   const facts = [];
   const $list = $(".mw-parser-output > ul").first();
   $list.find("li").each((_, el) => {
     facts.push({
-      html: $(el).html()?.trim() || "",
-      text: $(el).text().trim(),
+      html: smartquotesHtml($(el).html()?.trim() || ""),
+      text: smartquotesText($(el).text().trim()),
     });
   });
 

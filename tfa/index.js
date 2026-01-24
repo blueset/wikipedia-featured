@@ -1,5 +1,6 @@
 import { getUTCPlus12Now, addDaysUTC, formatYMD } from './utils.js';
 import { writeFile } from "fs/promises";
+import { smartquotesHtml, smartquotesText } from "../src/smartquotes-html.js";
 
 export const LANGUAGES = [
   'bn', 'de', 'el', 'en', 'he', 'hu', 'ja', 'sd', 'sv', 'ur', 'vi', 'zh'
@@ -51,12 +52,13 @@ export async function tfa() {
   for (const lang of LANGUAGES) {
     try {
       const { tfa, usedDate } = await getLatestAvailableTfa(lang, base);
+      const isEnglish = lang === 'en';
       const out = {
         timestamp: usedDate.toISOString(),
-        title: pickTitle(tfa),
-        description: tfa.description ?? null,
-        extract: tfa.extract ?? null,
-        extract_html: tfa.extract_html ?? null,
+        title: isEnglish ? smartquotesHtml(pickTitle(tfa)) : pickTitle(tfa),
+        description: isEnglish ? smartquotesText(tfa.description ?? null) : (tfa.description ?? null),
+        extract: isEnglish ? smartquotesText(tfa.extract ?? null) : (tfa.extract ?? null),
+        extract_html: isEnglish ? smartquotesHtml(tfa.extract_html ?? null) : (tfa.extract_html ?? null),
       };
 
       await writeFile(
