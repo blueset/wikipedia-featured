@@ -1,9 +1,10 @@
 
 import * as cheerio from "cheerio";
 import { writeFile } from "fs/promises";
+import { wikimediaFetch } from "../src/fetch.js";
 
 async function inTheNewsZh() {
-  const res = await fetch(
+  const res = await wikimediaFetch(
     "https://zh.wikipedia.org/w/api.php?action=parse&page=Template:Itn&prop=text&formatversion=2&format=json",
     {
       headers: {
@@ -12,9 +13,7 @@ async function inTheNewsZh() {
       },
     }
   );
-  if (!res.ok) {
-    throw new Error(`Failed to fetch in the news: ${res.statusText}`);
-  }
+  if (res === null) return; // Rate limited — warning already printed.
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);
@@ -87,7 +86,7 @@ async function inTheNewsZh() {
 }
 
 async function didYouKnowZh() {
-  const res = await fetch(
+  const res = await wikimediaFetch(
     "https://zh.wikipedia.org/w/api.php?action=parse&page=Template:Dyk&prop=text&formatversion=2&format=json",
     {
       headers: {
@@ -96,9 +95,7 @@ async function didYouKnowZh() {
       },
     }
   );
-  if (!res.ok) {
-    throw new Error(`Failed to fetch did you know: ${res.statusText}`);
-  }
+  if (res === null) return; // Rate limited — warning already printed.
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);

@@ -1,10 +1,11 @@
 import * as cheerio from "cheerio";
 import { writeFile } from "fs/promises";
 import { smartquotesHtml, smartquotesText } from "../src/smartquotes-html.js";
+import { wikimediaFetch } from "../src/fetch.js";
 
 
 async function inTheNewsEn() {
-  const res = await fetch(
+  const res = await wikimediaFetch(
     "https://en.wikipedia.org/w/api.php?action=parse&page=Template:In_the_news&prop=text&formatversion=2&format=json",
     {
       headers: {
@@ -14,9 +15,7 @@ async function inTheNewsEn() {
       },
     }
   );
-  if (!res.ok) {
-    throw new Error(`Failed to fetch in the news: ${res.statusText}`);
-  }
+  if (res === null) return; // Rate limited — warning already printed.
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);
@@ -110,7 +109,7 @@ async function inTheNewsEn() {
 }
 
 async function didYouKnowEn() {
-  const res = await fetch(
+  const res = await wikimediaFetch(
     "https://en.wikipedia.org/w/api.php?action=parse&page=Template:Did_you_know&prop=text&formatversion=2&format=json",
     {
       headers: {
@@ -119,9 +118,7 @@ async function didYouKnowEn() {
       },
     }
   );
-  if (!res.ok) {
-    throw new Error(`Failed to fetch did you know: ${res.statusText}`);
-  }
+  if (res === null) return; // Rate limited — warning already printed.
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);

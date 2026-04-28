@@ -1,6 +1,7 @@
 import { getUTCPlus12Now, addDaysUTC, formatYMD } from './utils.js';
 import { writeFile } from "fs/promises";
 import { smartquotesHtml, smartquotesText } from "../src/smartquotes-html.js";
+import { wikimediaFetch } from "../src/fetch.js";
 
 export const LANGUAGES = [
   'bn', 'de', 'el', 'en', 'he', 'hu', 'ja', 'sd', 'sv', 'ur', 'vi', 'zh'
@@ -9,15 +10,19 @@ export const LANGUAGES = [
 async function fetchFeatured(lang, date) {
   const { y, m, d } = formatYMD(date);
   const url = `https://api.wikimedia.org/feed/v1/wikipedia/${lang}/featured/${y}/${m}/${d}`;
-  const res = await fetch(url, {
+  const res = await wikimediaFetch(url, {
     headers: {
       'accept': 'application/json; charset=utf-8',
       // Wikimedia requests a descriptive UA. Adjust if you fork.
       'user-agent': 'wikipedia-featured-json/1.0 (GitHub Actions)'
     }
   });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for ${lang} ${y}-${m}-${d}`);
+  if (res === null) {
+    // Rate limited — warning already printed by wikimediaFetch. Stop retrying
+    // further dates for this language so the outer loop moves to the next one.
+    const err = new Error(`Rate limited (HTTP 429) for ${lang}`);
+    err.isRateLimit = true;
+    throw err;
   }
   return res.json();
 }
@@ -40,6 +45,7 @@ export async function getLatestAvailableTfa(lang, baseDate, maxLookbackDays = 60
         return { tfa: data.tfa, usedDate: tryDate };
       }
     } catch (e) {
+      if (e.isRateLimit) throw e; // Don't retry more dates when rate-limited.
       err = e;
     }
   }
