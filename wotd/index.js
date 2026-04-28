@@ -6,6 +6,7 @@ import {
   getFirstDayOfWeek,
   filterEmptyStrings,
 } from "./utils.js";
+import { wikimediaFetch } from "../src/fetch.js";
 
 const SOURCES = [
   {
@@ -41,16 +42,14 @@ const SOURCES = [
 ];
 
 async function fetchWotD(url) {
-  const res = await fetch(url, {
+  const res = await wikimediaFetch(url, {
     headers: {
       accept: "application/json; charset=utf-8",
       // Wikimedia requests a descriptive UA. Adjust if you fork.
       "user-agent": "wikipedia-featured-json/1.0 (GitHub Actions)",
     },
   });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for ${url}`);
-  }
+  if (res === null) return null; // Rate limited — warning already printed.
   const json = await res.json();
   return json.parse.text;
 }
@@ -278,6 +277,7 @@ export async function wotd() {
   for (const { id, lang, type, url } of SOURCES) {
     try {
       const html = await fetchWotD(url);
+      if (html === null) continue; // Rate limited — warning already printed.
       const data = await parseWotD(html, lang, type);
       await writeFile(`dist/${id}.json`, JSON.stringify(data, null, 2), "utf8");
       console.log(`Wrote ${id}.json, date: ${data.date || "n/a"}`);
