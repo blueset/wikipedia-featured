@@ -1,7 +1,9 @@
 /**
  * A fetch wrapper for Wikimedia endpoints that handles HTTP 429
- * (Too Many Requests) gracefully: emits a GitHub Actions warning and
- * returns null so that the caller can skip the item and continue.
+ * (Too Many Requests) gracefully: emits a GitHub Actions warning command on
+ * stdout (stdout is required — GitHub Actions only parses workflow commands
+ * from stdout, not stderr) and returns null so that the caller can skip the
+ * item and continue.
  *
  * All other non-ok responses still throw an Error.
  *

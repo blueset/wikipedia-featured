@@ -18,8 +18,9 @@ async function fetchFeatured(lang, date) {
     }
   });
   if (res === null) {
-    // Rate limited — stop retrying further dates for this language.
-    const err = new Error(`Rate limited (HTTP 429) for ${lang} ${y}-${m}-${d}`);
+    // Rate limited — warning already printed by wikimediaFetch. Stop retrying
+    // further dates for this language so the outer loop moves to the next one.
+    const err = new Error(`Rate limited (HTTP 429) for ${lang}`);
     err.isRateLimit = true;
     throw err;
   }
