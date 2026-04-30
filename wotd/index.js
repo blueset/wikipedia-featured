@@ -277,7 +277,11 @@ export async function wotd() {
   for (const { id, lang, type, url } of SOURCES) {
     try {
       const html = await fetchWotD(url);
-      if (html === null) continue; // Rate limited — warning already printed.
+      if (html === null) {
+        const out = { id, lang, type, error: "Rate limited (HTTP 429)" };
+        await writeFile(`dist/${id}.json`, JSON.stringify(out, null, 2), "utf8");
+        continue; // Rate limited — warning already printed.
+      }
       const data = await parseWotD(html, lang, type);
       await writeFile(`dist/${id}.json`, JSON.stringify(data, null, 2), "utf8");
       console.log(`Wrote ${id}.json, date: ${data.date || "n/a"}`);

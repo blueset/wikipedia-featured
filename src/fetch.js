@@ -15,9 +15,13 @@ export async function wikimediaFetch(url, options = {}) {
   const res = await fetch(url, options);
 
   if (res.status === 429) {
+    const headers = Object.fromEntries(res.headers.entries());
+    const body = await res.text();
     console.log(
       `::warning::Rate limited (HTTP 429) fetching ${url}. Skipping and continuing.`
     );
+    console.log(`Response headers: ${JSON.stringify(headers, null, 2)}`);
+    console.log(`Response body: ${body}`);
     return null;
   }
 

@@ -13,7 +13,10 @@ async function inTheNewsZh() {
       },
     }
   );
-  if (res === null) return; // Rate limited — warning already printed.
+  if (res === null) {
+    await writeFile(`dist/zh_itn.json`, JSON.stringify({ error: "Rate limited (HTTP 429)" }, null, 2), "utf8");
+    return; // Rate limited — warning already printed.
+  }
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);
@@ -95,7 +98,10 @@ async function didYouKnowZh() {
       },
     }
   );
-  if (res === null) return; // Rate limited — warning already printed.
+  if (res === null) {
+    await writeFile(`dist/zh_dyn.json`, JSON.stringify({ error: "Rate limited (HTTP 429)" }, null, 2), "utf8");
+    return; // Rate limited — warning already printed.
+  }
   const json = await res.json();
   const html = json.parse.text;
   const $ = cheerio.load(html);

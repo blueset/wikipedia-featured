@@ -85,6 +85,7 @@ export async function tfa() {
         description: null,
         extract: null,
         extract_html: null,
+        error: e.message,
       };
       await writeFile(
         `dist/${lang}.json`,
