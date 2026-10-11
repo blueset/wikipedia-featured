@@ -65,6 +65,8 @@ export async function tfa() {
         description: isEnglish ? smartquotesText(tfa.description ?? null) : (tfa.description ?? null),
         extract: isEnglish ? smartquotesText(tfa.extract ?? null) : (tfa.extract ?? null),
         extract_html: isEnglish ? smartquotesHtml(tfa.extract_html ?? null) : (tfa.extract_html ?? null),
+        thumbnail: tfa.thumbnail ?? null,
+        originalimage: tfa.originalimage ?? null,
       };
 
       await writeFile(
