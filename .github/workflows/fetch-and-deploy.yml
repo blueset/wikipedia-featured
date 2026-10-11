@@ -30,10 +30,24 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+      - name: Restore Wikimedia response cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/wikimedia
+          key: wikimedia-etag-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            wikimedia-etag-v1-
+
       - name: Build JSON
         run: |
           npm run build
           curl https://api.1point3acres.com/visa_tracker/greencard/visa_bulletin > ./dist/visa_bulletin.json
+
+      - name: Save Wikimedia response cache
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/wikimedia
+          key: wikimedia-etag-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Include fonts in site
         run: |
@@ -55,4 +69,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
